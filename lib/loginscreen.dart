@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -20,6 +21,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isKeyboardVisible =
+        KeyboardVisibilityProvider.isKeyboardVisible(context);
     var screenHeight = MediaQuery.of(context).size.height;
     var screenWidth = MediaQuery.of(context).size.width;
 
@@ -27,24 +30,28 @@ class _LoginScreenState extends State<LoginScreen> {
       resizeToAvoidBottomInset: false,
       body: Column(
         children: [
-          Container(
-            height: screenHeight / 2.5,
-            width: screenWidth,
-            decoration: BoxDecoration(
-              color: primary,
-              borderRadius: const BorderRadius.only(
-                bottomRight: Radius.circular(70),
-                bottomLeft: Radius.circular(70),
-              ),
-            ),
-            child: Center(
-              child: Icon(
-                Icons.person,
-                color: Colors.white,
-                size: screenWidth / 5,
-              ),
-            ),
-          ),
+          isKeyboardVisible
+              ? SizedBox(
+                  height: screenHeight / 16,
+                )
+              : Container(
+                  height: screenHeight / 2.5,
+                  width: screenWidth,
+                  decoration: BoxDecoration(
+                    color: primary,
+                    borderRadius: const BorderRadius.only(
+                      bottomRight: Radius.circular(70),
+                      bottomLeft: Radius.circular(70),
+                    ),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.person,
+                      color: Colors.white,
+                      size: screenWidth / 5,
+                    ),
+                  ),
+                ),
           Container(
             margin: EdgeInsets.only(
               top: screenHeight / 15,
@@ -67,9 +74,9 @@ class _LoginScreenState extends State<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 fieldTitle("ID Karyawan"),
-                customField("Masukkan Id Karyawan", idController),
+                customField("Masukkan Id Karyawan", idController, false),
                 fieldTitle("Password"),
-                customField("Masukkan Password", passController),
+                customField("Masukkan Password", passController, true),
                 Container(
                   height: 60,
                   width: screenWidth,
@@ -111,7 +118,8 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget customField(String hint, TextEditingController controller) {
+  Widget customField(
+      String hint, TextEditingController controller, bool obsecure) {
     return Container(
       width: screenWidth,
       margin: EdgeInsets.only(bottom: 12),
@@ -150,6 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   hintText: hint,
                 ),
                 maxLines: 1,
+                obscureText: obsecure,
               ),
             ),
           )
