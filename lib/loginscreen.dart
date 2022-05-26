@@ -187,35 +187,64 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   GestureDetector(
                     onTap: () async {
+                      FocusScope.of(context).unfocus();
                       String id = idController.text.trim();
                       String password = passController.text.trim();
-                      QuerySnapshot snap = await FirebaseFirestore.instance
+                      
+
+                      if(id.isEmpty){
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text("ID Karyawan tidak boleh kosong"),
+                      
+                        ));
+                      } else if(password.isEmpty){
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text("Password tidak boleh kosong"),
+                         
+                        ));
+                      } else {
+                        QuerySnapshot snap = await FirebaseFirestore.instance
                           .collection("karyawan")
                           .where('id', isEqualTo: id)
                           .get();
 
-                      print(snap.docs[0]['password']);	
+                      try{
+                        if(password == snap.docs[0]['password']){
+                          print("continue");
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text("Password salah"),
+                          ));
+                        }
+                      } catch(e) {
+                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text("ID Karyawan tidak ditemukan"),
+                          ));
+                      }
+                      }
                     },
-                    child: Container(
-                      height: 60,
-                      width: screenWidth,
-                      margin: EdgeInsets.only(top: screenWidth / 40),
-                      decoration: BoxDecoration(
-                        color: primary,
-                        borderRadius: const BorderRadius.all(Radius.circular(30)),
-                      ),
-                      child: Center(
-                        child: Text(
-                          "LOGIN",
-                          style: TextStyle(
-                            fontFamily: "NexaBold",
-                            fontSize: screenWidth / 26,
-                            color: Colors.white,
-                            letterSpacing: 2,
+                      child:
+                      Container(
+                        height: 60,
+                        width: screenWidth,
+                        margin: EdgeInsets.only(top: screenWidth / 40),
+                        decoration: BoxDecoration(
+                          color: primary,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(30)),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "LOGIN",
+                            style: TextStyle(
+                              fontFamily: "NexaBold",
+                              fontSize: screenWidth / 26,
+                              color: Colors.white,
+                              letterSpacing: 2,
+                            ),
                           ),
                         ),
                       ),
-                    ),
                   ),
                 ],
               ),
