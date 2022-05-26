@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_attendance/homescreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -20,6 +21,8 @@ class _LoginScreenState extends State<LoginScreen> {
   double screenWidth = 0;
 
   Color primary = Color.fromARGB(253, 68, 176, 239);
+
+  late SharedPreferences sharedPreferences;
 
   @override
   Widget build(BuildContext context) {
@@ -191,66 +194,69 @@ class _LoginScreenState extends State<LoginScreen> {
                       FocusScope.of(context).unfocus();
                       String id = idController.text.trim();
                       String password = passController.text.trim();
-                      
 
-                      if(id.isEmpty){
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      if (id.isEmpty) {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
                           content: Text("ID Karyawan tidak boleh kosong"),
-                      
                         ));
-                      } else if(password.isEmpty){
+                      } else if (password.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text("Password tidak boleh kosong"),
-                         
                         ));
                       } else {
                         QuerySnapshot snap = await FirebaseFirestore.instance
-                          .collection("karyawan")
-                          .where('id', isEqualTo: id)
-                          .get();
+                            .collection("karyawan")
+                            .where('id', isEqualTo: id)
+                            .get();
 
-                      try{
-                        if(password == snap.docs[0]['password']){
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => HomeScreen()
-                            ),
-                          );
-                        } else {
+                        try {
+                          if (password == snap.docs[0]['password']) {
+                            sharedPreferences =
+                                await SharedPreferences.getInstance();
+
+                            sharedPreferences
+                                .setString("id karyawan", id)
+                                .then((_) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => HomeScreen()),
+                              );
+                            });
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text("Password salah"),
+                            ));
+                          }
+                        } catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text("Password salah"),
-                          ));
-                        }
-                      } catch(e) {
-                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             content: Text("ID Karyawan tidak ditemukan"),
                           ));
-                      }
+                        }
                       }
                     },
-                      child:
-                      Container(
-                        height: 60,
-                        width: screenWidth,
-                        margin: EdgeInsets.only(top: screenWidth / 40),
-                        decoration: BoxDecoration(
-                          color: primary,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(30)),
-                        ),
-                        child: Center(
-                          child: Text(
-                            "LOGIN",
-                            style: TextStyle(
-                              fontFamily: "NexaBold",
-                              fontSize: screenWidth / 26,
-                              color: Colors.white,
-                              letterSpacing: 2,
-                            ),
+                    child: Container(
+                      height: 60,
+                      width: screenWidth,
+                      margin: EdgeInsets.only(top: screenWidth / 40),
+                      decoration: BoxDecoration(
+                        color: primary,
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(30)),
+                      ),
+                      child: Center(
+                        child: Text(
+                          "LOGIN",
+                          style: TextStyle(
+                            fontFamily: "NexaBold",
+                            fontSize: screenWidth / 26,
+                            color: Colors.white,
+                            letterSpacing: 2,
                           ),
                         ),
                       ),
+                    ),
                   ),
                 ],
               ),
