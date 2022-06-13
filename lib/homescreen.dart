@@ -6,9 +6,8 @@ import 'package:flutter_attendance/todayscreen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({ Key? key }) : super(key: key);
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -20,9 +19,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Color primary = Color.fromARGB(253, 68, 176, 239);
 
-  int currentIndex = 0;
+  int currentIndex = 1;
 
-  List<IconData> navigationIcons =[
+  List<IconData> navigationIcons = [
     FontAwesomeIcons.calendarAlt,
     FontAwesomeIcons.check,
     FontAwesomeIcons.user,
@@ -30,7 +29,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-       
     var screenHeight = MediaQuery.of(context).size.height;
     var screenWidth = MediaQuery.of(context).size.width;
 
@@ -57,8 +55,8 @@ class _HomeScreenState extends State<HomeScreen> {
             BoxShadow(
               color: Colors.black26,
               blurRadius: 10,
-              offset:  Offset(2,2),
-              ),
+              offset: Offset(2, 2),
+            ),
           ],
         ),
         child: ClipRRect(
@@ -67,42 +65,46 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-               for(int i = 0; i < navigationIcons.length; i++)...<Expanded>{
-                 Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      currentIndex = i;
-                    });
-                  },
-                  child: Container(
-                    height: screenHeight,
-                    width: screenWidth,
-                    color: Colors.white,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            navigationIcons[i],
-                          color: i == currentIndex ?  primary: Colors.black54,
-                          size: i == currentIndex ? 30 : 26,
-                          ),
-                          i == currentIndex ? Container(
-                            height: 3,
-                            width: 22,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(40)),
-                              color: primary,
+              for (int i = 0; i < navigationIcons.length; i++) ...<Expanded>{
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        currentIndex = i;
+                      });
+                    },
+                    child: Container(
+                      height: screenHeight,
+                      width: screenWidth,
+                      color: Colors.white,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              navigationIcons[i],
+                              color:
+                                  i == currentIndex ? primary : Colors.black54,
+                              size: i == currentIndex ? 30 : 26,
                             ),
-                          ) : const SizedBox(),
-                        ],
+                            i == currentIndex
+                                ? Container(
+                                    height: 3,
+                                    width: 22,
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(40)),
+                                      color: primary,
+                                    ),
+                                  )
+                                : const SizedBox(),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ), 
-              ),
-               }
+                ),
+              }
             ],
           ),
         ),
@@ -110,4 +112,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-

@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_attendance/model/user.dart';
+import 'package:intl/intl.dart';
 import 'package:slide_to_act/slide_to_act.dart';
 
 class TodayScreen extends StatefulWidget {
-  const TodayScreen({ Key? key }) : super(key: key);
+  const TodayScreen({Key? key}) : super(key: key);
 
   @override
   State<TodayScreen> createState() => _TodayScreenState();
@@ -25,7 +28,7 @@ class _TodayScreenState extends State<TodayScreen> {
         child: Column(
           children: [
             Container(
-              alignment:Alignment.centerLeft,
+              alignment: Alignment.centerLeft,
               margin: const EdgeInsets.only(top: 32),
               child: Text(
                 "Welcome",
@@ -35,19 +38,19 @@ class _TodayScreenState extends State<TodayScreen> {
                   fontSize: screenWidth / 20,
                 ),
               ),
-              ),
+            ),
             Container(
-              alignment:Alignment.centerLeft,
+              alignment: Alignment.centerLeft,
               child: Text(
-                "Employee",
+                "Employee" + User.username,
                 style: TextStyle(
                   fontFamily: "NexaRegular",
                   fontSize: screenWidth / 18,
                 ),
               ),
-              ),
+            ),
             Container(
-              alignment:Alignment.centerLeft,
+              alignment: Alignment.centerLeft,
               margin: const EdgeInsets.only(top: 32),
               child: Text(
                 "Today's Status",
@@ -56,21 +59,20 @@ class _TodayScreenState extends State<TodayScreen> {
                   fontSize: screenWidth / 18,
                 ),
               ),
-              ),
+            ),
             Container(
               margin: const EdgeInsets.only(top: 12, bottom: 32),
               height: 150,
-              decoration:  const BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 10,
-                    offset: Offset(2, 2),
-                  ),
-                ],
-                borderRadius: BorderRadius.all(Radius.circular(20))
-              ),
+              decoration: const BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 10,
+                      offset: Offset(2, 2),
+                    ),
+                  ],
+                  borderRadius: BorderRadius.all(Radius.circular(20))),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -80,14 +82,12 @@ class _TodayScreenState extends State<TodayScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(
-                          "Check In",
-                          style: TextStyle(
-                            fontFamily: "NexaRegular",
-                            fontSize: screenWidth / 20,
-                            color: Colors.black54,
-                          )
-                        ),
+                        Text("Check In",
+                            style: TextStyle(
+                              fontFamily: "NexaRegular",
+                              fontSize: screenWidth / 20,
+                              color: Colors.black54,
+                            )),
                         Text(
                           "09.30",
                           style: TextStyle(
@@ -96,7 +96,7 @@ class _TodayScreenState extends State<TodayScreen> {
                           ),
                         ),
                       ],
-                      ),
+                    ),
                   ),
                   Expanded(
                     child: Column(
@@ -119,7 +119,7 @@ class _TodayScreenState extends State<TodayScreen> {
                           ),
                         ),
                       ],
-                      ),
+                    ),
                   ),
                 ],
               ),
@@ -127,55 +127,66 @@ class _TodayScreenState extends State<TodayScreen> {
             Container(
               alignment: Alignment.bottomLeft,
               child: RichText(
-                text:TextSpan (
-                  text: "11",
+                text: TextSpan(
+                  text: DateTime.now().day.toString(),
                   style: TextStyle(
                     color: primary,
-                    fontSize: screenWidth /18,
+                    fontSize: screenWidth / 18,
                     fontFamily: "NexaBold",
                   ),
                   children: [
                     TextSpan(
-                      text: " Jan 2022",
+                      text: DateFormat(' MMM yyy').format(DateTime.now()),
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: screenWidth / 20,
                         fontFamily: "NexaBold",
-                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
-            Container(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "12:00:01 PM",
-                style: TextStyle(
-                  fontFamily: "NexaRegular",
-                  fontSize: screenWidth / 20,
-                  color: Colors.black54,
-                ),
-              ),
-            ),
+            StreamBuilder(
+                stream: Stream.periodic(const Duration(seconds: 1)),
+                builder: (context, snapshot) {
+                  return Container(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      DateFormat('hh:mm:ss a').format(DateTime.now()),
+                      style: TextStyle(
+                        fontFamily: "NexaRegular",
+                        fontSize: screenWidth / 20,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  );
+                }),
             Container(
               margin: EdgeInsets.only(top: 24),
               child: Builder(
-                builder:(context) {
+                builder: (context) {
                   final GlobalKey<SlideActionState> key = GlobalKey();
                   return SlideAction(
                     text: "Slide to Check Out",
                     textStyle: TextStyle(
-                      color: Colors.black54, 
-                      fontSize: screenWidth/ 20,
+                      color: Colors.black54,
+                      fontSize: screenWidth / 20,
                       fontFamily: "NexaRegular",
-                      ),
-                      outerColor: Colors.white,
-                      innerColor: primary,
-                      key: key,
-                      onSubmit: (){
-                        key.currentState!.reset();
-                      },
+                    ),
+                    outerColor: Colors.white,
+                    innerColor: primary,
+                    key: key,
+                    onSubmit: () async {
+                      print(DateFormat('hh:mm').format(DateTime.now()));
+
+                      QuerySnapshot snap = await FirebaseFirestore.instance
+                          .collection("karyawan")
+                          .where("id", isEqualTo: User.username)
+                          .get();
+
+                      print(snap.docs[0].id);
+                    },
                   );
                 },
               ),
