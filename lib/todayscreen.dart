@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_attendance/model/user.dart';
@@ -40,13 +42,12 @@ class _TodayScreenState extends State<TodayScreen> {
           .doc(DateFormat('dd MMM yyy').format(DateTime.now()))
           .get();
 
-      setState((){
+      setState(() {
         checkin = snap2['checkin'];
         checkout = snap2['checkout'];
       });
-
     } catch (e) {
-      setState((){
+      setState(() {
         checkin = "--/--";
         checkout = "--/--";
       });
@@ -198,63 +199,92 @@ class _TodayScreenState extends State<TodayScreen> {
                     ),
                   );
                 }),
-            Container(
-              margin: const EdgeInsets.only(top: 24),
-              child: Builder(
-                builder: (context) {
-                  final GlobalKey<SlideActionState> key = GlobalKey();
-                  return SlideAction(
-                    text: "Slide to Check Out",
-                    textStyle: TextStyle(
-                      color: Colors.black54,
-                      fontSize: screenWidth / 20,
-                      fontFamily: "NexaRegular",
+            checkout == "--/--"
+                ? Container(
+                    margin: const EdgeInsets.only(top: 24),
+                    child: Builder(
+                      builder: (context) {
+                        final GlobalKey<SlideActionState> key = GlobalKey();
+                        return SlideAction(
+                          text: checkin == "--/--"
+                              ? "slide to checkin"
+                              : "slide to checkout",
+                          textStyle: TextStyle(
+                            color: Colors.black54,
+                            fontSize: screenWidth / 20,
+                            fontFamily: "NexaRegular",
+                          ),
+                          outerColor: Colors.white,
+                          innerColor: primary,
+                          key: key,
+                          onSubmit: () async {
+                            Timer(Duration(seconds: 1), () {
+                              key.currentState!.reset();
+                            });
+                            QuerySnapshot snap = await FirebaseFirestore
+                                .instance
+                                .collection("karyawan")
+                                .where("id", isEqualTo: User.username)
+                                .get();
+
+                            DocumentSnapshot snap2 = await FirebaseFirestore
+                                .instance
+                                .collection("karyawan")
+                                .doc(snap.docs[0].id)
+                                .collection("record")
+                                .doc(DateFormat('dd MMM yyy')
+                                    .format(DateTime.now()))
+                                .get();
+
+                            try {
+                              String checkin = snap2['checkin'];
+                              setState(() {
+                                checkout = DateFormat('hh:mm').format(
+                                    DateTime.now());
+                              });
+                              await FirebaseFirestore.instance
+                                  .collection("karyawan")
+                                  .doc(snap.docs[0].id)
+                                  .collection("record")
+                                  .doc(DateFormat('dd MMM yyy')
+                                      .format(DateTime.now()))
+                                  .update({
+                                'checkin': checkin,
+                                'checkout':
+                                    DateFormat('hh:mm').format(DateTime.now()),
+                              });
+                            } catch (e) {
+                              setState(() {
+                                checkin = DateFormat('hh:mm').format(
+                                    DateTime.now());
+                              });
+                              await FirebaseFirestore.instance
+                                  .collection("karyawan")
+                                  .doc(snap.docs[0].id)
+                                  .collection("record")
+                                  .doc(DateFormat('dd MMM yyy')
+                                      .format(DateTime.now()))
+                                  .set({
+                                'checkin':
+                                    DateFormat('hh:mm').format(DateTime.now()),
+                              });
+                            }
+                          },
+                        );
+                      },
                     ),
-                    outerColor: Colors.white,
-                    innerColor: primary,
-                    key: key,
-                    onSubmit: () async {
-                      QuerySnapshot snap = await FirebaseFirestore.instance
-                          .collection("karyawan")
-                          .where("id", isEqualTo: User.username)
-                          .get();
-
-                      DocumentSnapshot snap2 = await FirebaseFirestore.instance
-                          .collection("karyawan")
-                          .doc(snap.docs[0].id)
-                          .collection("record")
-                          .doc(DateFormat('dd MMM yyy').format(DateTime.now()))
-                          .get();
-
-                      try {
-                        String checkin = snap2['checkin'];
-                        await FirebaseFirestore.instance
-                            .collection("karyawan")
-                            .doc(snap.docs[0].id)
-                            .collection("record")
-                            .doc(
-                                DateFormat('dd MMM yyy').format(DateTime.now()))
-                            .update({
-                          'checkin': checkin,
-                          'checkout':
-                              DateFormat('hh:mm').format(DateTime.now()),
-                        });
-                      } catch (e) {
-                        await FirebaseFirestore.instance
-                            .collection("karyawan")
-                            .doc(snap.docs[0].id)
-                            .collection("record")
-                            .doc(
-                                DateFormat('dd MMM yyy').format(DateTime.now()))
-                            .set({
-                          'checkin': DateFormat('hh:mm').format(DateTime.now()),
-                        });
-                      }
-                    },
-                  );
-                },
-              ),
-            ),
+                  )
+                : Container(
+                    margin: const EdgeInsets.only(top: 24),
+                    child: Text(
+                      'kamu telah menyelesaikan hari ini!',
+                      style: TextStyle(
+                        color: Colors.black54,
+                        fontSize: screenWidth / 20,
+                        fontFamily: "NexaRegular",
+                      ),
+                    ),
+                  ),
           ],
         ),
       ),
