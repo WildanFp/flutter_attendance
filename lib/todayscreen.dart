@@ -15,7 +15,43 @@ class _TodayScreenState extends State<TodayScreen> {
   double screenHeigh = 0;
   double screenWidth = 0;
 
+  String checkin = "--/--";
+  String checkout = "--/--";
+
   Color primary = Color.fromARGB(253, 68, 176, 239);
+
+  @override
+  void initState() {
+    super.initState();
+    _getRecord();
+  }
+
+  void _getRecord() async {
+    try {
+      QuerySnapshot snap = await FirebaseFirestore.instance
+          .collection("karyawan")
+          .where("id", isEqualTo: User.username)
+          .get();
+
+      DocumentSnapshot snap2 = await FirebaseFirestore.instance
+          .collection("karyawan")
+          .doc(snap.docs[0].id)
+          .collection("record")
+          .doc(DateFormat('dd MMM yyy').format(DateTime.now()))
+          .get();
+
+      setState((){
+        checkin = snap2['checkin'];
+        checkout = snap2['checkout'];
+      });
+
+    } catch (e) {
+      setState((){
+        checkin = "--/--";
+        checkout = "--/--";
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +125,7 @@ class _TodayScreenState extends State<TodayScreen> {
                               color: Colors.black54,
                             )),
                         Text(
-                          "09.30",
+                          checkin,
                           style: TextStyle(
                             fontFamily: "NexaBold",
                             fontSize: screenWidth / 18,
@@ -112,7 +148,7 @@ class _TodayScreenState extends State<TodayScreen> {
                           ),
                         ),
                         Text(
-                          "--/--",
+                          checkout,
                           style: TextStyle(
                             fontFamily: "NexaBold",
                             fontSize: screenWidth / 18,
@@ -178,14 +214,10 @@ class _TodayScreenState extends State<TodayScreen> {
                     innerColor: primary,
                     key: key,
                     onSubmit: () async {
-                      print(DateFormat('hh:mm').format(DateTime.now()));
-
                       QuerySnapshot snap = await FirebaseFirestore.instance
                           .collection("karyawan")
                           .where("id", isEqualTo: User.username)
                           .get();
-
-                      print(snap.docs[0].id);
 
                       DocumentSnapshot snap2 = await FirebaseFirestore.instance
                           .collection("karyawan")
@@ -203,8 +235,9 @@ class _TodayScreenState extends State<TodayScreen> {
                             .doc(
                                 DateFormat('dd MMM yyy').format(DateTime.now()))
                             .update({
-                            'checkin': checkin,
-                            'checkout' : DateFormat('hh:mm').format(DateTime.now()),
+                          'checkin': checkin,
+                          'checkout':
+                              DateFormat('hh:mm').format(DateTime.now()),
                         });
                       } catch (e) {
                         await FirebaseFirestore.instance
