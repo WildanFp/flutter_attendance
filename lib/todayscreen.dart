@@ -196,7 +196,6 @@ class _TodayScreenState extends State<TodayScreen> {
 
                       try {
                         String checkin = snap2['checkin'];
-                      } catch (e) {
                         await FirebaseFirestore.instance
                             .collection("karyawan")
                             .doc(snap.docs[0].id)
@@ -204,6 +203,17 @@ class _TodayScreenState extends State<TodayScreen> {
                             .doc(
                                 DateFormat('dd MMM yyy').format(DateTime.now()))
                             .update({
+                            'checkin': checkin,
+                            'checkout' : DateFormat('hh:mm').format(DateTime.now()),
+                        });
+                      } catch (e) {
+                        await FirebaseFirestore.instance
+                            .collection("karyawan")
+                            .doc(snap.docs[0].id)
+                            .collection("record")
+                            .doc(
+                                DateFormat('dd MMM yyy').format(DateTime.now()))
+                            .set({
                           'checkin': DateFormat('hh:mm').format(DateTime.now()),
                         });
                       }
