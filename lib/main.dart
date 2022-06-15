@@ -42,9 +42,11 @@ class _AuthCheckState extends State<AuthCheck> {
   @override
   void initState() {
     super.initState();
+    _getCurrentUser();
   }
 
-  void _getUser() async {
+  void _getCurrentUser() async { 
+    sharedPreferences = await SharedPreferences.getInstance();
     try {
       if (sharedPreferences.getString('id karyawan') != null) {
         setState(() {
@@ -61,6 +63,6 @@ class _AuthCheckState extends State<AuthCheck> {
 
   @override
   Widget build(BuildContext context) {
-    return userAvailable ? HomeScreen() : LoginScreen();
+    return userAvailable ? const HomeScreen() : const LoginScreen();
   }
 }

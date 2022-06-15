@@ -19,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Color primary = Color.fromARGB(253, 68, 176, 239);
 
-  int currentIndex = 1;
+  int currentIndex = 2;
 
   List<IconData> navigationIcons = [
     FontAwesomeIcons.calendarAlt,

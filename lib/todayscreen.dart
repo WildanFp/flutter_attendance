@@ -42,7 +42,7 @@ class _TodayScreenState extends State<TodayScreen> {
             Container(
               alignment: Alignment.centerLeft,
               child: Text(
-                "Employee" + User.username,
+                "Employee " + User.username,
                 style: TextStyle(
                   fontFamily: "NexaRegular",
                   fontSize: screenWidth / 18,
@@ -163,7 +163,7 @@ class _TodayScreenState extends State<TodayScreen> {
                   );
                 }),
             Container(
-              margin: EdgeInsets.only(top: 24),
+              margin: const EdgeInsets.only(top: 24),
               child: Builder(
                 builder: (context) {
                   final GlobalKey<SlideActionState> key = GlobalKey();
