@@ -186,6 +186,27 @@ class _TodayScreenState extends State<TodayScreen> {
                           .get();
 
                       print(snap.docs[0].id);
+
+                      DocumentSnapshot snap2 = await FirebaseFirestore.instance
+                          .collection("karyawan")
+                          .doc(snap.docs[0].id)
+                          .collection("record")
+                          .doc(DateFormat('dd MMM yyy').format(DateTime.now()))
+                          .get();
+
+                      try {
+                        String checkin = snap2['checkin'];
+                      } catch (e) {
+                        await FirebaseFirestore.instance
+                            .collection("karyawan")
+                            .doc(snap.docs[0].id)
+                            .collection("record")
+                            .doc(
+                                DateFormat('dd MMM yyy').format(DateTime.now()))
+                            .update({
+                          'checkin': DateFormat('hh:mm').format(DateTime.now()),
+                        });
+                      }
                     },
                   );
                 },
