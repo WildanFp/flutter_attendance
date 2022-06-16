@@ -4,6 +4,7 @@ import 'package:flutter_attendance/homescreen.dart';
 import 'package:flutter_attendance/loginscreen.dart';
 import 'package:flutter_attendance/model/user.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:month_year_picker/month_year_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
@@ -24,7 +25,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const KeyboardVisibilityProvider(child: AuthCheck()),
+      home: const KeyboardVisibilityProvider(
+        child: AuthCheck(),
+      ),
+      localizationsDelegates: const [
+        MonthYearPickerLocalizations.delegate,
+      ],
     );
   }
 }
@@ -45,12 +51,12 @@ class _AuthCheckState extends State<AuthCheck> {
     _getCurrentUser();
   }
 
-  void _getCurrentUser() async { 
+  void _getCurrentUser() async {
     sharedPreferences = await SharedPreferences.getInstance();
     try {
-      if (sharedPreferences.getString('id karyawan') != null) {
+      if (sharedPreferences.getString('Idkaryawan') != null) {
         setState(() {
-          User.username = sharedPreferences.getString('id karyawan')!;
+          User.idkaryawan = sharedPreferences.getString('Idkaryawan')!;
           userAvailable = true;
         });
       }

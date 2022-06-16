@@ -32,7 +32,7 @@ class _TodayScreenState extends State<TodayScreen> {
     try {
       QuerySnapshot snap = await FirebaseFirestore.instance
           .collection("karyawan")
-          .where("id", isEqualTo: User.username)
+          .where("id", isEqualTo: User.idkaryawan)
           .get();
 
       DocumentSnapshot snap2 = await FirebaseFirestore.instance
@@ -79,7 +79,7 @@ class _TodayScreenState extends State<TodayScreen> {
             Container(
               alignment: Alignment.centerLeft,
               child: Text(
-                "Employee " + User.username,
+                "Employee " + User.idkaryawan,
                 style: TextStyle(
                   fontFamily: "NexaRegular",
                   fontSize: screenWidth / 18,
@@ -218,13 +218,10 @@ class _TodayScreenState extends State<TodayScreen> {
                           innerColor: primary,
                           key: key,
                           onSubmit: () async {
-                            Timer(Duration(seconds: 1), () {
-                              key.currentState!.reset();
-                            });
                             QuerySnapshot snap = await FirebaseFirestore
                                 .instance
                                 .collection("karyawan")
-                                .where("id", isEqualTo: User.username)
+                                .where("id", isEqualTo: User.idkaryawan)
                                 .get();
 
                             DocumentSnapshot snap2 = await FirebaseFirestore
@@ -239,8 +236,8 @@ class _TodayScreenState extends State<TodayScreen> {
                             try {
                               String checkin = snap2['checkin'];
                               setState(() {
-                                checkout = DateFormat('hh:mm').format(
-                                    DateTime.now());
+                                checkout =
+                                    DateFormat('hh:mm').format(DateTime.now());
                               });
                               await FirebaseFirestore.instance
                                   .collection("karyawan")
@@ -249,14 +246,15 @@ class _TodayScreenState extends State<TodayScreen> {
                                   .doc(DateFormat('dd MMM yyy')
                                       .format(DateTime.now()))
                                   .update({
+                                'date': Timestamp.now(),
                                 'checkin': checkin,
                                 'checkout':
                                     DateFormat('hh:mm').format(DateTime.now()),
                               });
                             } catch (e) {
                               setState(() {
-                                checkin = DateFormat('hh:mm').format(
-                                    DateTime.now());
+                                checkin =
+                                    DateFormat('hh:mm').format(DateTime.now());
                               });
                               await FirebaseFirestore.instance
                                   .collection("karyawan")
@@ -265,10 +263,14 @@ class _TodayScreenState extends State<TodayScreen> {
                                   .doc(DateFormat('dd MMM yyy')
                                       .format(DateTime.now()))
                                   .set({
+                                'date': Timestamp.now(),
                                 'checkin':
                                     DateFormat('hh:mm').format(DateTime.now()),
+                                'checkout': "--/--",
                               });
                             }
+
+                            key.currentState!.reset();
                           },
                         );
                       },
