@@ -216,7 +216,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 await SharedPreferences.getInstance();
 
                             sharedPreferences
-                                .setString("id karyawan", id)
+                                .setString("Idkaryawan", id)
                                 .then((_) {
                               Navigator.pushReplacement(
                                 context,
