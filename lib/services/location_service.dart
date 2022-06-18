@@ -1,8 +1,6 @@
-import 'dart:html';
-
 import 'package:location/location.dart';
 
-class LocationService{
+class LocationService {
   Location location = Location();
   late LocationData _locData;
 
@@ -11,17 +9,17 @@ class LocationService{
     PermissionStatus _permission;
 
     _serviceEnabled = await location.serviceEnabled();
-    if(!_serviceEnabled){
+    if (!_serviceEnabled) {
       _serviceEnabled = await location.requestService();
-      if(!_serviceEnabled){
+      if (!_serviceEnabled) {
         return;
       }
     }
 
     _permission = await location.hasPermission();
-    if(_permission == PermissionStatus.denied){
+    if (_permission == PermissionStatus.denied) {
       _permission = await location.requestPermission();
-      if(_permission != PermissionStatus.granted){
+      if (_permission != PermissionStatus.granted) {
         return;
       }
     }
@@ -36,5 +34,4 @@ class LocationService{
     _locData = await location.getLocation();
     return _locData.longitude;
   }
-
 }
