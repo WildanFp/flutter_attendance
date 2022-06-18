@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_attendance/model/user.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:intl/intl.dart';
 import 'package:slide_to_act/slide_to_act.dart';
 
@@ -19,6 +20,7 @@ class _TodayScreenState extends State<TodayScreen> {
 
   String checkin = "--/--";
   String checkout = "--/--";
+  String location = " ";
 
   Color primary = Color.fromARGB(253, 68, 176, 239);
 
@@ -26,6 +28,14 @@ class _TodayScreenState extends State<TodayScreen> {
   void initState() {
     super.initState();
     _getRecord();
+  }
+
+  void _getLocation() async{
+    List<Placemark> placemark = await placemarkFromCoordinates(User.lat, User.long);
+
+    setState(() {
+      location = "${placemark[0].street}, ${placemark[0].administrativeArea},${placemark[0].postalCode},${placemark[0].country}";
+    });
   }
 
   void _getRecord() async {
@@ -50,6 +60,7 @@ class _TodayScreenState extends State<TodayScreen> {
       setState(() {
         checkin = "--/--";
         checkout = "--/--";
+
       });
     }
   }
@@ -201,7 +212,7 @@ class _TodayScreenState extends State<TodayScreen> {
                 }),
             checkout == "--/--"
                 ? Container(
-                    margin: const EdgeInsets.only(top: 24),
+                    margin: const EdgeInsets.only(top: 24, bottom: 12),
                     child: Builder(
                       builder: (context) {
                         final GlobalKey<SlideActionState> key = GlobalKey();
@@ -218,7 +229,9 @@ class _TodayScreenState extends State<TodayScreen> {
                           innerColor: primary,
                           key: key,
                           onSubmit: () async {
-                            QuerySnapshot snap = await FirebaseFirestore
+                            if(User.lat !=0){
+                              _getLocation();
+                              QuerySnapshot snap = await FirebaseFirestore
                                 .instance
                                 .collection("karyawan")
                                 .where("id", isEqualTo: User.idkaryawan)
@@ -248,8 +261,8 @@ class _TodayScreenState extends State<TodayScreen> {
                                   .update({
                                 'date': Timestamp.now(),
                                 'checkin': checkin,
-                                'checkout':
-                                    DateFormat('hh:mm').format(DateTime.now()),
+                                'checkout':DateFormat('hh:mm').format(DateTime.now()),
+                                'location': location,
                               });
                             } catch (e) {
                               setState(() {
@@ -267,17 +280,77 @@ class _TodayScreenState extends State<TodayScreen> {
                                 'checkin':
                                     DateFormat('hh:mm').format(DateTime.now()),
                                 'checkout': "--/--",
+                                'location': location,
                               });
                             }
 
                             key.currentState!.reset();
+                            } else{
+                              Timer(const Duration(seconds: 3), () async {
+                                 _getLocation();
+                              QuerySnapshot snap = await FirebaseFirestore
+                                .instance
+                                .collection("karyawan")
+                                .where("id", isEqualTo: User.idkaryawan)
+                                .get();
+
+                            DocumentSnapshot snap2 = await FirebaseFirestore
+                                .instance
+                                .collection("karyawan")
+                                .doc(snap.docs[0].id)
+                                .collection("record")
+                                .doc(DateFormat('dd MMM yyy')
+                                    .format(DateTime.now()))
+                                .get();
+
+                            try {
+                              String checkin = snap2['checkin'];
+                              setState(() {
+                                checkout =
+                                    DateFormat('hh:mm').format(DateTime.now());
+                              });
+                              await FirebaseFirestore.instance
+                                  .collection("karyawan")
+                                  .doc(snap.docs[0].id)
+                                  .collection("record")
+                                  .doc(DateFormat('dd MMM yyy')
+                                      .format(DateTime.now()))
+                                  .update({
+                                'date': Timestamp.now(),
+                                'checkin': checkin,
+                                'checkout':DateFormat('hh:mm').format(DateTime.now()),
+                                'location': location,
+                              });
+                            } catch (e) {
+                              setState(() {
+                                checkin =
+                                    DateFormat('hh:mm').format(DateTime.now());
+                              });
+                              await FirebaseFirestore.instance
+                                  .collection("karyawan")
+                                  .doc(snap.docs[0].id)
+                                  .collection("record")
+                                  .doc(DateFormat('dd MMM yyy')
+                                      .format(DateTime.now()))
+                                  .set({
+                                'date': Timestamp.now(),
+                                'checkin':
+                                    DateFormat('hh:mm').format(DateTime.now()),
+                                'checkout': "--/--",
+                                'location': location,
+                              });
+                            }
+
+                            key.currentState!.reset();
+                              });
+                            }
                           },
                         );
                       },
                     ),
                   )
                 : Container(
-                    margin: const EdgeInsets.only(top: 24),
+                    margin: const EdgeInsets.only(top: 24, bottom: 24),
                     child: Text(
                       'kamu telah menyelesaikan hari ini!',
                       style: TextStyle(
@@ -287,6 +360,9 @@ class _TodayScreenState extends State<TodayScreen> {
                       ),
                     ),
                   ),
+                  location != " " ? Text(
+                    "Location: " + location,
+                  ): const SizedBox(),
           ],
         ),
       ),
