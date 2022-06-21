@@ -1,5 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'dart:io';
 
 import 'model/user.dart';
 
@@ -19,6 +23,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
   TextEditingController addressController = TextEditingController();
+
+  void pickUploadProfilePic() async {
+    final iamge = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxHeight: 512,
+      maxWidth: 512,
+      imageQuality: 90,
+    );
+
+    Reference ref = FirebaseStorage.instance
+        .ref()
+        .child("${User.idkaryawan.toLowerCase()}_profile.jpg");
+
+    await ref.putFile(File(image!.path));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,45 +89,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             GestureDetector(
-              onTap: (){
+              onTap: () {
                 showDatePicker(
                   context: context,
                   initialDate: DateTime.now(),
                   firstDate: DateTime(1900),
                   lastDate: DateTime.now(),
                   builder: (context, child) {
-                          return Theme(
-                            data: Theme.of(context).copyWith(
-                              colorScheme: ColorScheme.light(
-                                primary: primary,
-                                secondary: primary,
-                                onSecondary: Colors.white,
-                              ),
-                              textButtonTheme: TextButtonThemeData(
-                                style: TextButton.styleFrom(
-                                  primary: primary,
-                                ),
-                              ),
-                              textTheme: const TextTheme(
-                                headline4: TextStyle(
-                                  fontFamily: "NexaBold",
-                                ),
-                                overline: TextStyle(
-                                  fontFamily: "NexaBold",
-                                ),
-                                button: TextStyle(
-                                  fontFamily: "NexaBold",
-                                ),
-                              ),
-                            ),
-                            child: child!,
-                          );
-                        },
+                    return Theme(
+                      data: Theme.of(context).copyWith(
+                        colorScheme: ColorScheme.light(
+                          primary: primary,
+                          secondary: primary,
+                          onSecondary: Colors.white,
+                        ),
+                        textButtonTheme: TextButtonThemeData(
+                          style: TextButton.styleFrom(
+                            primary: primary,
+                          ),
+                        ),
+                        textTheme: const TextTheme(
+                          headline4: TextStyle(
+                            fontFamily: "NexaBold",
+                          ),
+                          overline: TextStyle(
+                            fontFamily: "NexaBold",
+                          ),
+                          button: TextStyle(
+                            fontFamily: "NexaBold",
+                          ),
+                        ),
+                      ),
+                      child: child!,
+                    );
+                  },
                 ).then((value) {
-                          setState(() {
-                            birth = DateFormat("MM/dd/yyyy").format(value!);
-                          });
-                        });
+                  setState(() {
+                    birth = DateFormat("MM/dd/yyyy").format(value!);
+                  });
+                });
               },
               child: Container(
                 height: kToolbarHeight,
@@ -135,33 +154,57 @@ class _ProfileScreenState extends State<ProfileScreen> {
             textField("Address", "Address", addressController),
             GestureDetector(
               onTap: () async {
-               String firstName = firstNameController.text;
-               String lastName = lastNameController.text;
-               String birthDate = birth;
-               String address = addressController.text;
+                String firstName = firstNameController.text;
+                String lastName = lastNameController.text;
+                String birthDate = birth;
+                String address = addressController.text;
 
-               if (firstName.isEmpty)
+                if (User.canEdit) {
+                  if (firstName.isEmpty) {
+                    showSnackBar("Please enter your first name!");
+                  } else if (lastName.isEmpty) {
+                    showSnackBar("Please enter your last name!");
+                  } else if (birthDate.isEmpty) {
+                    showSnackBar("Please enter your birth date!");
+                  } else if (address.isEmpty) {
+                    showSnackBar("Please enter your address!");
+                  } else {
+                    await FirebaseFirestore.instance
+                        .collection("karyawan")
+                        .doc(User.id)
+                        .update({
+                      'firstName': firstName,
+                      'lastName': lastName,
+                      'birthDate': birthDate,
+                      'address': address,
+                      'canEdit': false,
+                    });
+                  }
+                } else {
+                  showSnackBar(
+                      "You can't edit anymore, please contact support team.");
+                }
               },
               child: Container(
-                  height: kToolbarHeight,
-                  width: screenWidth,
-                  margin: const EdgeInsets.only(bottom: 12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: primary,
-                  ),
-                  child: const Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      "SAVE",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: "NexaBold",
-                        fontSize: 16,
-                      ),
+                height: kToolbarHeight,
+                width: screenWidth,
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  color: primary,
+                ),
+                child: const Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    "SAVE",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: "NexaBold",
+                      fontSize: 16,
                     ),
                   ),
                 ),
+              ),
             ),
           ],
         ),
@@ -169,7 +212,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget textField(String tittle, String hint, TextEditingController controller) {
+  Widget textField(
+      String tittle, String hint, TextEditingController controller) {
     return Column(
       children: [
         Align(
@@ -207,12 +251,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ],
     );
   }
-  void showSnackBar(String text){
+
+  void showSnackBar(String text) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
+        behavior: SnackBarBehavior.floating,
         content: Text(
           text,
-      ),
+        ),
       ),
     );
   }
