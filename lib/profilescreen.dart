@@ -16,6 +16,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Color primary = Color.fromARGB(253, 68, 176, 239);
   String birth = "Date of birth";
 
+  TextEditingController firstNameController = TextEditingController();
+  TextEditingController lastNameController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
@@ -53,8 +57,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            textField("First Name", "First Name"),
-            textField("Last Name", "Last Name"),
+            textField("First Name", "First Name", firstNameController),
+            textField("Last Name", "Last Name", lastNameController),
             const Align(
               alignment: Alignment.centerLeft,
               child: Text(
@@ -128,34 +132,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ),
-            textField("Address", "Address"),
-            Container(
-                height: kToolbarHeight,
-                width: screenWidth,
-                margin: const EdgeInsets.only(bottom: 12),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
-                  color: primary,
-                ),
-                child: const Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    "SAVE",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontFamily: "NexaBold",
-                      fontSize: 16,
+            textField("Address", "Address", addressController),
+            GestureDetector(
+              onTap: () async {
+               String firstName = firstNameController.text;
+               String lastName = lastNameController.text;
+               String birthDate = birth;
+               String address = addressController.text;
+
+               if (firstName.isEmpty)
+              },
+              child: Container(
+                  height: kToolbarHeight,
+                  width: screenWidth,
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    color: primary,
+                  ),
+                  child: const Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "SAVE",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: "NexaBold",
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                 ),
-              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget textField(String tittle, String hint) {
+  Widget textField(String tittle, String hint, TextEditingController controller) {
     return Column(
       children: [
         Align(
@@ -169,6 +183,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Container(
           margin: const EdgeInsets.only(bottom: 12),
           child: TextFormField(
+            controller: controller,
             cursorColor: Colors.black54,
             maxLines: 1,
             decoration: InputDecoration(
@@ -190,6 +205,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ],
+    );
+  }
+  void showSnackBar(String text){
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          text,
+      ),
+      ),
     );
   }
 }
