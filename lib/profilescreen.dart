@@ -129,6 +129,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             textField("Address", "Address"),
+            Container(
+                height: kToolbarHeight,
+                width: screenWidth,
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  color: primary,
+                ),
+                child: const Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    "SAVE",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: "NexaBold",
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
