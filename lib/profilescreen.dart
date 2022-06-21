@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'model/user.dart';
 
@@ -13,6 +14,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   double screenHeight = 0;
   double screenWidth = 0;
   Color primary = Color.fromARGB(253, 68, 176, 239);
+  String birth = "Date of birth";
 
   @override
   Widget build(BuildContext context) {
@@ -53,23 +55,75 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 10),
             textField("First Name", "First Name"),
             textField("Last Name", "Last Name"),
-            Container(
-              height: kToolbarHeight,
-              width: screenWidth,
-              margin: const EdgeInsets.only(bottom: 12),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(color: Colors.black54),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Date of birth",
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontFamily: "NexaBold",
+                ),
               ),
+            ),
+            GestureDetector(
+              onTap: (){
+                showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(1900),
+                  lastDate: DateTime.now(),
+                  builder: (context, child) {
+                          return Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: ColorScheme.light(
+                                primary: primary,
+                                secondary: primary,
+                                onSecondary: Colors.white,
+                              ),
+                              textButtonTheme: TextButtonThemeData(
+                                style: TextButton.styleFrom(
+                                  primary: primary,
+                                ),
+                              ),
+                              textTheme: const TextTheme(
+                                headline4: TextStyle(
+                                  fontFamily: "NexaBold",
+                                ),
+                                overline: TextStyle(
+                                  fontFamily: "NexaBold",
+                                ),
+                                button: TextStyle(
+                                  fontFamily: "NexaBold",
+                                ),
+                              ),
+                            ),
+                            child: child!,
+                          );
+                        },
+                ).then((value) {
+                          setState(() {
+                            birth = DateFormat("MM/dd/yyyy").format(value!);
+                          });
+                        });
+              },
               child: Container(
+                height: kToolbarHeight,
+                width: screenWidth,
+                margin: const EdgeInsets.only(bottom: 12),
                 padding: const EdgeInsets.only(left: 11),
-                alignment: Alignment.centerLeft,
-                child: const Text(
-                  "Date of birth",
-                  style: TextStyle(
-                    color: Colors.black54,
-                    fontFamily: "NexaBold",
-                    fontSize: 16,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(color: Colors.black54),
+                ),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    birth,
+                    style: const TextStyle(
+                      color: Colors.black54,
+                      fontFamily: "NexaBold",
+                      fontSize: 16,
+                    ),
                   ),
                 ),
               ),
