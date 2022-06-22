@@ -215,7 +215,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                   )
-                : const SizedBox(),
+                  : GestureDetector(
+                    onTap: (){
+
+                    },
+                    child: Container(
+                      height: 20,
+                      width: 100,
+                      margin: const EdgeInsets.only(bottom: 12),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        color: Colors.red,
+                      ),
+                      child: const Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          "LOGOUT",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: "NexaBold",
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+           const SizedBox(),
           ],
         ),
       ),

@@ -19,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
   double screenHeigh = 0;
   double screenWidth = 0;
 
-  Color primary = Color.fromARGB(253, 68, 176, 239);
+  Color primary = const Color.fromARGB(253, 68, 176, 239);
 
   int currentIndex = 2;
 
@@ -160,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     width: 22,
                                     decoration: BoxDecoration(
                                       borderRadius:
-                                          BorderRadius.all(Radius.circular(40)),
+                                          const BorderRadius.all(Radius.circular(40)),
                                       color: primary,
                                     ),
                                   )
