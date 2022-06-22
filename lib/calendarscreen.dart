@@ -158,7 +158,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                       child: Center(
                                         child: Text(
                                           DateFormat('EE\ndd').format(
-                                              snap![index]['date'].toDate()),
+                                              snap [index]['date'].toDate()),
                                           style: TextStyle(
                                             fontFamily: "NexaBold",
                                             fontSize: screenWidth / 20,
@@ -181,7 +181,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                                 color: Colors.black54,
                                               )),
                                           Text(
-                                            snap![index]['checkin'],
+                                            snap[index]['checkin'],
                                             style: TextStyle(
                                               fontFamily: "NexaBold",
                                               fontSize: screenWidth / 18,
