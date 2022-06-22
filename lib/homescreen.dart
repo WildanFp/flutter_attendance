@@ -1,12 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_attendance/calendarscreen.dart';
-import 'package:flutter_attendance/loginscreen.dart';
 import 'package:flutter_attendance/profilescreen.dart';
 import 'package:flutter_attendance/services/location_service.dart';
 import 'package:flutter_attendance/todayscreen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'model/user.dart';
 
@@ -36,14 +34,17 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _startLocationService();
     getId().then((value) {
-    _getCredentials();
-    _getProfilePic();
+      _getCredentials();
+      _getProfilePic();
     });
   }
 
   void _getCredentials() async {
     try {
-      DocumentSnapshot doc = await FirebaseFirestore.instance.collection("Employee").doc(User.id).get();
+      DocumentSnapshot doc = await FirebaseFirestore.instance
+          .collection("karyawan")
+          .doc(User.id)
+          .get();
       setState(() {
         User.canEdit = doc['canEdit'];
         User.firstName = doc['firstName'];
@@ -51,32 +52,35 @@ class _HomeScreenState extends State<HomeScreen> {
         User.birthDate = doc['birthDate'];
         User.address = doc['address'];
       });
-    } catch(e) {
+    } catch (e) {
       return;
     }
   }
 
   void _getProfilePic() async {
-    DocumentSnapshot doc = await FirebaseFirestore.instance.collection("Employee").doc(User.id).get();
+    DocumentSnapshot doc = await FirebaseFirestore.instance
+        .collection("karyawan")
+        .doc(User.id)
+        .get();
     setState(() {
       User.profilePicLink = doc['profilePic'];
     });
-  }  
+  }
 
-  void _startLocationService() async{
+  void _startLocationService() async {
     LocationService().initialize();
 
-    LocationService().getLongitude().then((value){
+    LocationService().getLongitude().then((value) {
       setState(() {
         User.long = value!;
       });
 
-      LocationService().getLatitude().then((value){
-      setState(() {
-        User.lat = value!;
+      LocationService().getLatitude().then((value) {
+        setState(() {
+          User.lat = value!;
+        });
       });
     });
-  });
   }
 
   Future<void> getId() async {
