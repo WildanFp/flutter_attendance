@@ -24,6 +24,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController lastNameController = TextEditingController();
   TextEditingController addressController = TextEditingController();
 
+  get image => null;
+
   void pickUploadProfilePic() async {
     final iamge = await ImagePicker().pickImage(
       source: ImageSource.gallery,
@@ -37,6 +39,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         .child("${User.idkaryawan.toLowerCase()}_profile.jpg");
 
     await ref.putFile(File(image!.path));
+
+    ref.getDownloadURL().then((value){
+      setState((){
+        User.profilePicLink = value;
+      });
+    });
   }
 
   @override
@@ -57,12 +65,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 borderRadius: BorderRadius.circular(100),
                 color: primary,
               ),
-              child: const Center(
-                child: Icon(
+              child: Center(
+                child: User.profilePicLink == " " ? const Icon(
                   Icons.person,
                   size: 80,
                   color: Colors.white,
-                ),
+                ): Image.network(User.profilePicLink),
               ),
             ),
             Align(
