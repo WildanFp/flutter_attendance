@@ -40,10 +40,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     await ref.putFile(File(image!.path));
 
-    ref.getDownloadURL().then((value){
+    ref.getDownloadURL().then((value) async {
       setState((){
         User.profilePicLink = value;
       });
+      await FirebaseFirestore.instance.collection("Employee").doc(User.id).update({
+        'profilePic': value,
+        });
     });
   }
 
@@ -56,21 +59,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: EdgeInsets.all(20),
         child: Column(
           children: [
-            Container(
-              margin: const EdgeInsets.only(top: 20, bottom: 20),
-              height: 120,
-              width: 120,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
-                color: primary,
-              ),
-              child: Center(
-                child: User.profilePicLink == " " ? const Icon(
-                  Icons.person,
-                  size: 80,
-                  color: Colors.white,
-                ): Image.network(User.profilePicLink),
+            GestureDetector(
+              onTap: (){
+                pickUploadProfilePic();
+              },
+              child: Container(
+                margin: const EdgeInsets.only(top: 20, bottom: 20),
+                height: 120,
+                width: 120,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100),
+                  color: primary,
+                ),
+                child: Center(
+                  child: User.profilePicLink == " " ? const Icon(
+                    Icons.person,
+                    size: 80,
+                    color: Colors.white,
+                  ): ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.network(User.profilePicLink)
+                  ),
+                ),
               ),
             ),
             Align(
@@ -84,19 +95,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            textField("First Name", "First Name", firstNameController),
-            textField("Last Name", "Last Name", lastNameController),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Date of birth",
-                style: TextStyle(
-                  color: Colors.black87,
-                  fontFamily: "NexaBold",
-                ),
-              ),
-            ),
-            GestureDetector(
+            User.canEdit ? textField("First Name", "First Name", firstNameController): field("First Name", User.firstName),
+            User.canEdit ? textField("Last Name", "Last Name", lastNameController): field("Last Name", User.lastName),
+            User.canEdit ? GestureDetector(
               onTap: () {
                 showDatePicker(
                   context: context,
@@ -137,30 +138,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   });
                 });
               },
-              child: Container(
-                height: kToolbarHeight,
-                width: screenWidth,
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.only(left: 11),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(color: Colors.black54),
-                ),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    birth,
-                    style: const TextStyle(
-                      color: Colors.black54,
-                      fontFamily: "NexaBold",
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            textField("Address", "Address", addressController),
-            GestureDetector(
+              child:field("Date of Birth", birth),
+            ): field("Date of Birth", User.birthDate), 
+            User.canEdit ? textField("Address", "Address", addressController): field("Address", User.address),
+            User.canEdit ? GestureDetector(
               onTap: () async {
                 String firstName = firstNameController.text;
                 String lastName = lastNameController.text;
@@ -186,6 +167,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       'birthDate': birthDate,
                       'address': address,
                       'canEdit': false,
+                    }).then((value) {
+                      setState(() {
+                        User.canEdit = false;
+                        User.firstName = firstName;
+                        User.lastName = lastName;
+                        User.birthDate = birthDate;
+                        User.address = address;
+                      });
                     });
                   }
                 } else {
@@ -213,10 +202,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
               ),
-            ),
+            ) : const SizedBox(),
           ],
         ),
       ),
+    );
+  }
+
+  Widget field(String title, String text) {
+    return Column(
+      children: [
+        Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                title,
+                style:const TextStyle(
+                  color: Colors.black87,
+                  fontFamily: "NexaBold",
+                ),
+              ),
+            ),
+        Container(
+          height: kToolbarHeight,
+          width: screenWidth,
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.only(left: 11),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4),
+            border: Border.all(color: Colors.black54),
+        ),
+        child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          text,
+          style: const TextStyle(
+            color: Colors.black54,
+            fontFamily: "NexaBold",
+            fontSize: 16,
+          ),
+        ),
+        ),
+  ),
+      ],
     );
   }
 
