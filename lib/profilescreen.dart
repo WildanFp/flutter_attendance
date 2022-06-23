@@ -3,8 +3,11 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
-
+// import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_attendance/loginscreen.dart';
+import 'services/authentication_service.dart';
 import 'model/user.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -23,6 +26,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
   TextEditingController addressController = TextEditingController();
+
+  final AuthenticationService _auth = AuthenticationService();
 
   void pickUploadProfilePic() async {
     final image = await ImagePicker().pickImage(
@@ -215,9 +220,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                   )
-                  : GestureDetector(
-                    onTap: (){
-
+                : GestureDetector(
+                    onTap: () async {
+                      SharedPreferences pref =
+                          await SharedPreferences.getInstance();
+                      await pref.clear();
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (context) => const LoginScreen()),
+                          (route) => false);
                     },
                     child: Container(
                       height: 20,
@@ -240,7 +251,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                   ),
-           const SizedBox(),
+            const SizedBox(),
           ],
         ),
       ),
