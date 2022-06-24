@@ -1,17 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_attendance/loginscreen.dart';
+import 'package:flutter_attendance/main.dart';
 import 'model/user.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
+
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -22,41 +24,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
   double screenWidth = 0;
   Color primary = Color.fromARGB(253, 68, 176, 239);
   String birth = "Date of birth";
+  final user = FirebaseAuth.instance.currentUser;
+  final AuthCheck _auth = AuthCheck();
 
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
   TextEditingController addressController = TextEditingController();
 
   void pickUploadProfilePic() async {
-    final image = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-      maxHeight: 512,
-      maxWidth: 512,
-      imageQuality: 90,
-    );
 
     Reference ref = FirebaseStorage.instance
-        .ref()
-        .child("${User.idkaryawan.toLowerCase()}_profilepic.jpg");
+        .ref();
 
-    await ref.putFile(File(image!.path));
 
     ref.getDownloadURL().then((value) async {
       setState(() {
-        User.profilePicLink = value;
       });
       await FirebaseFirestore.instance
           .collection("karyawan")
-          .doc(User.id)
+          .doc(User1.id)
           .update({
-        'profilePic': value,
       });
     });
   }
+
    late SharedPreferences sharedPreferences;
   @override
-  Widget build(BuildContext context) {
-    screenHeight = MediaQuery.of(context).size.height;
+  Widget build(BuildContext context){
+      screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -65,9 +60,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           children: [
             GestureDetector(
-              onTap: () {
-                pickUploadProfilePic();
-              },
               child: Container(
                 margin: const EdgeInsets.only(top: 20, bottom: 20),
                 height: 120,
@@ -77,16 +69,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   borderRadius: BorderRadius.circular(100),
                   color: primary,
                 ),
-                child: Center(
-                  child: User.profilePicLink == " "
-                      ? const Icon(
+                child: const Center(
+                      child: Icon(
                           Icons.person,
                           size: 80,
                           color: Colors.white,
-                        )
-                      : ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Image.network(User.profilePicLink),
                         ),
                 ),
               ),
@@ -94,7 +81,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Align(
               alignment: Alignment.center,
               child: Text(
-                "Karyawan ${User.idkaryawan}",
+                "Karyawan ${User1.idkaryawan}",
                 style: const TextStyle(
                   fontFamily: "NexaBold",
                   fontSize: 18,
@@ -102,13 +89,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            User.canEdit
+            User1.canEdit
                 ? textField("First Name", "First Name", firstNameController)
-                : field("First Name", User.firstName),
-            User.canEdit
+                : field("First Name", User1.firstName),
+            User1.canEdit
                 ? textField("Last Name", "Last Name", lastNameController)
-                : field("Last Name", User.lastName),
-            User.canEdit
+                : field("Last Name", User1.lastName),
+            User1.canEdit
                 ? GestureDetector(
                     onTap: () {
                       showDatePicker(
@@ -152,11 +139,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     },
                     child: field("Date of Birth", birth),
                   )
-                : field("Date of Birth", User.birthDate),
-            User.canEdit
+                : field("Date of Birth", User1.birthDate),
+            User1.canEdit
                 ? textField("Address", "Address", addressController)
-                : field("Address", User.address),
-            User.canEdit
+                : field("Address", User1.address),
+            User1.canEdit
                 ? GestureDetector(
                     onTap: () async {
                       String firstName = firstNameController.text;
@@ -164,7 +151,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       String birthDate = birth;
                       String address = addressController.text;
 
-                      if (User.canEdit) {
+                      if (User1.canEdit) {
                         if (firstName.isEmpty) {
                           showSnackBar("Please enter your first name!");
                         } else if (lastName.isEmpty) {
@@ -176,7 +163,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         } else {
                           await FirebaseFirestore.instance
                               .collection("karyawan")
-                              .doc(User.id)
+                              .doc(User1.id)
                               .update({
                             'firstName': firstName,
                             'lastName': lastName,
@@ -185,11 +172,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             'canEdit': false,
                           }).then((value) {
                             setState(() {
-                              User.canEdit = false;
-                              User.firstName = firstName;
-                              User.lastName = lastName;
-                              User.birthDate = birthDate;
-                              User.address = address;
+                              User1.canEdit = false;
+                              User1.firstName = firstName;
+                              User1.lastName = lastName;
+                              User1.birthDate = birthDate;
+                              User1.address = address;
                             });
                           });
                         }
@@ -218,10 +205,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                     ),
-                  )
-                : GestureDetector(
-                    onTap: () {
-                      signOut();
+                  ):
+                  Container(
+                    child : GestureDetector(
+                    onTap: () async {
+                      await _auth.signOut();
+                      Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const LoginScreen()),
+                              );
                     },
                     child: Container(
                       height: 20,
@@ -244,12 +237,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                   ),
-            const SizedBox(),
+                  ),  
+             const SizedBox(),
           ],
         ),
       ),
-    );
-  }
+      );}
 
   Widget field(String title, String text) {
     return Column(
@@ -341,8 +334,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
  signOut() async {
-    await auth.signOut();
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => LoginScreen()));
-  }
+    
 }
+}
+class LogOut extends StatelessWidget {
+    @override
+    Widget build(BuildContext context) => Scaffold(
+      body: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot){
+            return LoginScreen();
+          }
+      )
+    );}
