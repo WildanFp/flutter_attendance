@@ -29,32 +29,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   final AuthenticationService _auth = AuthenticationService();
 
-  void pickUploadProfilePic() async {
-    final image = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-      maxHeight: 512,
-      maxWidth: 512,
-      imageQuality: 90,
-    );
+  // void pickUploadProfilePic() async {
+  //   final image = await ImagePicker().pickImage(
+  //     source: ImageSource.gallery,
+  //     maxHeight: 512,
+  //     maxWidth: 512,
+  //     imageQuality: 90,
+  //   );
 
-    Reference ref = FirebaseStorage.instance
-        .ref()
-        .child("${User.idkaryawan.toLowerCase()}_profilepic.jpg");
+  //   Reference ref = FirebaseStorage.instance
+  //       .ref()
+  //       .child("${User.idkaryawan.toLowerCase()}_profilepic.jpg");
 
-    await ref.putFile(File(image!.path));
+  //   await ref.putFile(File(image!.path));
 
-    ref.getDownloadURL().then((value) async {
-      setState(() {
-        User.profilePicLink = value;
-      });
-      await FirebaseFirestore.instance
-          .collection("karyawan")
-          .doc(User.id)
-          .update({
-        'profilePic': value,
-      });
-    });
-  }
+  //   ref.getDownloadURL().then((value) async {
+  //     setState(() {
+  //       User.profilePicLink = value;
+  //     });
+  //     await FirebaseFirestore.instance
+  //         .collection("karyawan")
+  //         .doc(User.id)
+  //         .update({
+  //       'profilePic': value,
+  //     });
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +67,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             GestureDetector(
               onTap: () {
-                pickUploadProfilePic();
+                // pickUploadProfilePic();
               },
               child: Container(
                 margin: const EdgeInsets.only(top: 20, bottom: 20),
