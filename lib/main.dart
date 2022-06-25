@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_attendance/homescreen.dart';
@@ -20,14 +19,13 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: KeyboardVisibilityProvider(
+      home: const KeyboardVisibilityProvider(
         child: AuthCheck(),
       ),
       localizationsDelegates: const [
@@ -38,35 +36,18 @@ class MyApp extends StatelessWidget {
 }
 
 class AuthCheck extends StatefulWidget {
-  AuthCheck({Key? key}) : super(key: key);
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  
-  Future signOut() async {
-      try {
-        return await _auth.signOut();
-      } catch (e){
-      print(e.toString());
-      return null;
-      }
-    }
+  const AuthCheck({Key? key}) : super(key: key);
+
   @override
   State<AuthCheck> createState() => _AuthCheckState();
 }
 
 class _AuthCheckState extends State<AuthCheck> {
-  
   bool userAvailable = false;
   late SharedPreferences sharedPreferences;
   @override
   void initState() {
     super.initState();
-    auth.authStateChanges().listen((User? user) {
-  if (user == null) {
-    print('User is currently signed out!');
-  } else {
-    print('User is signed in!');
-  }
-});
     _getCurrentUser();
   }
 
@@ -75,7 +56,7 @@ class _AuthCheckState extends State<AuthCheck> {
     try {
       if (sharedPreferences.getString('Idkaryawan') != null) {
         setState(() {
-          User1.idkaryawan = sharedPreferences.getString('Idkaryawan')!;
+          User.idkaryawan = sharedPreferences.getString('Idkaryawan')!;
           userAvailable = true;
         });
       }
@@ -88,6 +69,6 @@ class _AuthCheckState extends State<AuthCheck> {
 
   @override
   Widget build(BuildContext context) {
-    return userAvailable ? const LoginScreen() : const LoginScreen();
+    return userAvailable ? const HomeScreen() : const LoginScreen();
   }
 }

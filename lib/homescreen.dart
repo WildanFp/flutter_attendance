@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_attendance/calendarscreen.dart';
 import 'package:flutter_attendance/profilescreen.dart';
@@ -44,14 +43,14 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       DocumentSnapshot doc = await FirebaseFirestore.instance
           .collection("karyawan")
-          .doc(User1.id)
+          .doc(User.id)
           .get();
       setState(() {
-        User1.canEdit = doc['canEdit'];
-        User1.firstName = doc['firstName'];
-        User1.lastName = doc['lastName'];
-        User1.birthDate = doc['birthDate'];
-        User1.address = doc['address'];
+        User.canEdit = doc['canEdit'];
+        User.firstName = doc['firstName'];
+        User.lastName = doc['lastName'];
+        User.birthDate = doc['birthDate'];
+        User.address = doc['address'];
       });
     } catch (e) {
       return;
@@ -61,10 +60,10 @@ class _HomeScreenState extends State<HomeScreen> {
   // void _getProfilePic() async {
   //   DocumentSnapshot doc = await FirebaseFirestore.instance
   //       .collection("karyawan")
-  //       .doc(User1.id)
+  //       .doc(User.id)
   //       .get();
   //   setState(() {
-  //     User1.profilePicLink = doc['profilePic'];
+  //     User.profilePicLink = doc['profilePic'];
   //   });
   // }
 
@@ -73,12 +72,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
     LocationService().getLongitude().then((value) {
       setState(() {
-        User1.long = value!;
+        User.long = value!;
       });
 
       LocationService().getLatitude().then((value) {
         setState(() {
-          User1.lat = value!;
+          User.lat = value!;
         });
       });
     });
@@ -87,11 +86,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> getId() async {
     QuerySnapshot snap = await FirebaseFirestore.instance
         .collection("karyawan")
-        .where('id', isEqualTo: User1.idkaryawan)
+        .where('id', isEqualTo: User.idkaryawan)
         .get();
 
     setState(() {
-      User1.id = snap.docs[0].id;
+      User.id = snap.docs[0].id;
     });
   }
 
@@ -160,14 +159,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                     height: 3,
                                     width: 22,
                                     decoration: BoxDecoration(
-                                      borderRadius:
-                                          const BorderRadius.all(Radius.circular(40)),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(40)),
                                       color: primary,
                                     ),
                                   )
-                                : 
-                                
-                                const SizedBox(),
+                                : const SizedBox(),
                           ],
                         ),
                       ),
@@ -182,4 +179,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-

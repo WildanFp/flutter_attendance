@@ -1,8 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
-
-final FirebaseAuth auth = FirebaseAuth.instance;
-
-class User1 {
+class User {
   static String id = " ";
   static String idkaryawan = " ";
   static String firstName = " ";
@@ -14,5 +10,3 @@ class User1 {
   static double long = 0;
   static bool canEdit = true;
 }
-
-

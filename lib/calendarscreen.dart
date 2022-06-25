@@ -115,7 +115,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection("karyawan")
-                    .doc(User1.id)
+                    .doc(User.id)
                     .collection("record")
                     .snapshots(),
                 builder: (BuildContext context,
