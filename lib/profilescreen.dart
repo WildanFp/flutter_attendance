@@ -24,7 +24,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Color primary = Color.fromARGB(253, 68, 176, 239);
   String birth = "Date of birth";
   final user = FirebaseAuth.instance.currentUser;
-  final AuthCheck _auth = AuthCheck();
+  final AuthCheck auth = AuthCheck();
 
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
@@ -207,12 +207,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 : Container(
                     child: GestureDetector(
                       onTap: () async {
-                        await _auth.signOut();
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const LoginScreen()),
-                        );
+                        final logoutValue = await AuthCheck().logout();
+                        if (logoutValue == true) {
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                                builder: (context) => const LoginScreen()),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: Duration(seconds: 3),
+                              content: Text("Something went wrong!"),
+                            ),
+                          );
+                        }
                       },
                       child: Container(
                         height: 20,
@@ -331,16 +339,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
-
-  signOut() async {}
-}
-
-class LogOut extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) => Scaffold(
-      body: StreamBuilder<User?>(
-          stream: FirebaseAuth.instance.authStateChanges(),
-          builder: (context, snapshot) {
-            return LoginScreen();
-          }));
 }
