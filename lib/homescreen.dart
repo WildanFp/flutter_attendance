@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_attendance/calendarscreen.dart';
 import 'package:flutter_attendance/profilescreen.dart';
@@ -43,14 +44,14 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       DocumentSnapshot doc = await FirebaseFirestore.instance
           .collection("karyawan")
-          .doc(User.id)
+          .doc(User1.id)
           .get();
       setState(() {
-        User.canEdit = doc['canEdit'];
-        User.firstName = doc['firstName'];
-        User.lastName = doc['lastName'];
-        User.birthDate = doc['birthDate'];
-        User.address = doc['address'];
+        User1.canEdit = doc['canEdit'];
+        User1.firstName = doc['firstName'];
+        User1.lastName = doc['lastName'];
+        User1.birthDate = doc['birthDate'];
+        User1.address = doc['address'];
       });
     } catch (e) {
       return;
@@ -60,10 +61,10 @@ class _HomeScreenState extends State<HomeScreen> {
   // void _getProfilePic() async {
   //   DocumentSnapshot doc = await FirebaseFirestore.instance
   //       .collection("karyawan")
-  //       .doc(User.id)
+  //       .doc(User1.id)
   //       .get();
   //   setState(() {
-  //     User.profilePicLink = doc['profilePic'];
+  //     User1.profilePicLink = doc['profilePic'];
   //   });
   // }
 
@@ -72,12 +73,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
     LocationService().getLongitude().then((value) {
       setState(() {
-        User.long = value!;
+        User1.long = value!;
       });
 
       LocationService().getLatitude().then((value) {
         setState(() {
-          User.lat = value!;
+          User1.lat = value!;
         });
       });
     });
@@ -86,11 +87,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> getId() async {
     QuerySnapshot snap = await FirebaseFirestore.instance
         .collection("karyawan")
-        .where('id', isEqualTo: User.idkaryawan)
+        .where('id', isEqualTo: User1.idkaryawan)
         .get();
 
     setState(() {
-      User.id = snap.docs[0].id;
+      User1.id = snap.docs[0].id;
     });
   }
 

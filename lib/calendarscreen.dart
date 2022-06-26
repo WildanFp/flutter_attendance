@@ -115,7 +115,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection("karyawan")
-                    .doc(User.id)
+                    .doc(User1.id)
                     .collection("record")
                     .snapshots(),
                 builder: (BuildContext context,
@@ -158,7 +158,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                       child: Center(
                                         child: Text(
                                           DateFormat('EE\ndd').format(
-                                              snap [index]['date'].toDate()),
+                                              snap[index]['date'].toDate()),
                                           style: TextStyle(
                                             fontFamily: "NexaBold",
                                             fontSize: screenWidth / 20,

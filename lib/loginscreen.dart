@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+// import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_attendance/homescreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -26,8 +26,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isKeyboardVisible =
-        KeyboardVisibilityProvider.isKeyboardVisible(context);
+    // final bool isKeyboardVisible =
+    //     KeyboardVisibilityProvider.isKeyboardVisible(context);
     var screenHeight = MediaQuery.of(context).size.height;
     var screenWidth = MediaQuery.of(context).size.width;
 
@@ -36,28 +36,28 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            isKeyboardVisible
-                ? SizedBox(
-                    height: screenHeight / 16,
-                  )
-                : Container(
-                    height: screenHeight / 2.5,
-                    width: screenWidth,
-                    decoration: BoxDecoration(
-                      color: primary,
-                      borderRadius: const BorderRadius.only(
-                        bottomRight: Radius.circular(70),
-                        bottomLeft: Radius.circular(70),
-                      ),
-                    ),
-                    child: Center(
-                      child: Icon(
-                        Icons.person,
-                        color: Colors.white,
-                        size: screenWidth / 5,
-                      ),
-                    ),
-                  ),
+            // isKeyboardVisible
+            SizedBox(
+              height: screenHeight / 16,
+            ),
+            Container(
+              height: screenHeight / 2.5,
+              width: screenWidth,
+              decoration: BoxDecoration(
+                color: primary,
+                borderRadius: const BorderRadius.only(
+                  bottomRight: Radius.circular(70),
+                  bottomLeft: Radius.circular(70),
+                ),
+              ),
+              child: Center(
+                child: Icon(
+                  Icons.person,
+                  color: Colors.white,
+                  size: screenWidth / 5,
+                ),
+              ),
+            ),
             Container(
               margin: EdgeInsets.only(
                 top: screenHeight / 15,
@@ -201,7 +201,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           content: Text("ID Karyawan tidak boleh kosong"),
                         ));
                       } else if (password.isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
                           content: Text("Password tidak boleh kosong"),
                         ));
                       } else {
@@ -221,16 +222,18 @@ class _LoginScreenState extends State<LoginScreen> {
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => HomeScreen()),
+                                    builder: (context) => const HomeScreen()),
                               );
                             });
                           } else {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
                               content: Text("Password salah"),
                             ));
                           }
                         } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
                             content: Text("ID Karyawan tidak ditemukan"),
                           ));
                         }
