@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_attendance/loginscreen.dart';
 import 'package:flutter_attendance/model/user.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:intl/intl.dart';
@@ -17,6 +19,7 @@ class TodayScreen extends StatefulWidget {
 class _TodayScreenState extends State<TodayScreen> {
   double screenHeigh = 0;
   double screenWidth = 0;
+  final user = FirebaseAuth.instance.currentUser;
 
   String checkin = "--/--";
   String checkout = "--/--";
@@ -32,7 +35,7 @@ class _TodayScreenState extends State<TodayScreen> {
 
   void _getLocation() async {
     List<Placemark> placemark =
-        await placemarkFromCoordinates(User.lat, User.long);
+        await placemarkFromCoordinates(User1.lat, User1.long);
 
     setState(() {
       location =
@@ -44,7 +47,7 @@ class _TodayScreenState extends State<TodayScreen> {
     try {
       QuerySnapshot snap = await FirebaseFirestore.instance
           .collection("karyawan")
-          .where("id", isEqualTo: User.idkaryawan)
+          .where("id", isEqualTo: User1.idkaryawan)
           .get();
 
       DocumentSnapshot snap2 = await FirebaseFirestore.instance
@@ -91,7 +94,7 @@ class _TodayScreenState extends State<TodayScreen> {
             Container(
               alignment: Alignment.centerLeft,
               child: Text(
-                User.firstName,
+                "Employee " + User1.idkaryawan,
                 style: TextStyle(
                   fontFamily: "NexaRegular",
                   fontSize: screenWidth / 18,
@@ -230,12 +233,12 @@ class _TodayScreenState extends State<TodayScreen> {
                           innerColor: primary,
                           key: key,
                           onSubmit: () async {
-                            if (User.lat != 0) {
+                            if (User1.lat != 0) {
                               _getLocation();
                               QuerySnapshot snap = await FirebaseFirestore
                                   .instance
                                   .collection("karyawan")
-                                  .where("id", isEqualTo: User.idkaryawan)
+                                  .where("id", isEqualTo: User1.idkaryawan)
                                   .get();
 
                               DocumentSnapshot snap2 = await FirebaseFirestore
@@ -293,7 +296,7 @@ class _TodayScreenState extends State<TodayScreen> {
                                 QuerySnapshot snap = await FirebaseFirestore
                                     .instance
                                     .collection("karyawan")
-                                    .where("id", isEqualTo: User.idkaryawan)
+                                    .where("id", isEqualTo: User1.idkaryawan)
                                     .get();
 
                                 DocumentSnapshot snap2 = await FirebaseFirestore
