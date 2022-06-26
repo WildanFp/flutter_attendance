@@ -91,7 +91,7 @@ class _TodayScreenState extends State<TodayScreen> {
             Container(
               alignment: Alignment.centerLeft,
               child: Text(
-                "Employee " + User.idkaryawan,
+                User.firstName,
                 style: TextStyle(
                   fontFamily: "NexaRegular",
                   fontSize: screenWidth / 18,
@@ -286,7 +286,7 @@ class _TodayScreenState extends State<TodayScreen> {
                                 });
                               }
 
-                              key.currentState!.reset();
+                              key.currentState?.reset();
                             } else {
                               Timer(const Duration(seconds: 3), () async {
                                 _getLocation();
@@ -344,7 +344,7 @@ class _TodayScreenState extends State<TodayScreen> {
                                   });
                                 }
 
-                                key.currentState!.reset();
+                                key.currentState?.reset();
                               });
                             }
                           },
