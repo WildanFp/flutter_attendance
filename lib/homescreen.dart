@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_attendance/calendarscreen.dart';
 import 'package:flutter_attendance/profilescreen.dart';
@@ -36,7 +35,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _startLocationService();
     getId().then((value) {
       _getCredentials();
-      // _getProfilePic();
     });
   }
 
@@ -57,16 +55,6 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
   }
-
-  // void _getProfilePic() async {
-  //   DocumentSnapshot doc = await FirebaseFirestore.instance
-  //       .collection("karyawan")
-  //       .doc(User1.id)
-  //       .get();
-  //   setState(() {
-  //     User1.profilePicLink = doc['profilePic'];
-  //   });
-  // }
 
   void _startLocationService() async {
     LocationService().initialize();

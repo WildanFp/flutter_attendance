@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_attendance/homescreen.dart';
 import 'package:flutter_attendance/loginscreen.dart';
 import 'package:flutter_attendance/model/user.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
@@ -37,29 +38,39 @@ class MyApp extends StatelessWidget {
 
 class AuthCheck extends StatefulWidget {
   AuthCheck({Key? key}) : super(key: key);
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  @override
+  State<AuthCheck> createState() => _AuthCheckState();
 
   Future signOut() async {
     try {
-      return await _auth.signOut();
-    } catch (e) {
-      print(e.toString());
+      return auth.signOut();
+    } catch (error) {
+      print(error.toString());
       return null;
     }
   }
 
-  @override
-  State<AuthCheck> createState() => _AuthCheckState();
+  Future<bool> logout() async {
+    SharedPreferences storage = await SharedPreferences.getInstance();
+    final id = storage.getString('Idkaryawan');
+    if (id != null) {
+      await storage.remove('Idkaryawan');
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 class _AuthCheckState extends State<AuthCheck> {
-  bool userAvailable = false;
+  bool userAvailable = true;
   late SharedPreferences sharedPreferences;
   @override
   void initState() {
     super.initState();
     auth.authStateChanges().listen((User? user) {
-      if (user == null) {
+      if (userAvailable == false) {
         print('User is currently signed out!');
       } else {
         print('User is signed in!');
