@@ -204,47 +204,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                   )
-                : Container(
-                    child: GestureDetector(
-                      onTap: () async {
-                        final logoutValue = await AuthCheck().logout();
-                        if (logoutValue == true) {
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                                builder: (context) => const LoginScreen()),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              duration: Duration(seconds: 3),
-                              content: Text("Something went wrong!"),
-                            ),
-                          );
-                        }
-                      },
-                      child: Container(
-                        height: 20,
-                        width: 100,
-                        margin: const EdgeInsets.only(bottom: 12),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4),
-                          color: Colors.red,
-                        ),
-                        child: const Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            "LOGOUT",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontFamily: "NexaBold",
-                              fontSize: 10,
-                            ),
-                          ),
-                        ),
+                : const SizedBox(),
+            Container(
+              child: GestureDetector(
+                onTap: () async {
+                  final logoutValue = await AuthCheck().logout();
+                  if (logoutValue == true) {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                          builder: (context) => const LoginScreen()),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        duration: Duration(seconds: 3),
+                        content: Text("Something went wrong!"),
+                      ),
+                    );
+                  }
+                },
+                child: Container(
+                  height: 20,
+                  width: 100,
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    color: Colors.red,
+                  ),
+                  child: const Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "LOGOUT",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: "NexaBold",
+                        fontSize: 10,
                       ),
                     ),
                   ),
-            const SizedBox(),
+                ),
+              ),
+            ),
           ],
         ),
       ),
