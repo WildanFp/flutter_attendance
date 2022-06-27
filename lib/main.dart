@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_attendance/homescreen.dart';
 import 'package:flutter_attendance/loginscreen.dart';
@@ -41,15 +42,6 @@ class AuthCheck extends StatefulWidget {
 
   @override
   State<AuthCheck> createState() => _AuthCheckState();
-
-  Future signOut() async {
-    try {
-      return auth.signOut();
-    } catch (error) {
-      print(error.toString());
-      return null;
-    }
-  }
 
   Future<bool> logout() async {
     SharedPreferences storage = await SharedPreferences.getInstance();
