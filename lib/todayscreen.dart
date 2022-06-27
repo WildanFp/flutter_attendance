@@ -367,9 +367,24 @@ class _TodayScreenState extends State<TodayScreen> {
                     ),
                   ),
             location != " "
-                ? Text(
-                    "Location: " + location,
-                  )
+                ? Container(
+                  margin: const EdgeInsets.only(top: 12, bottom: 32),
+                  height: 50,
+                  width : 300,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 10,
+                        offset: Offset(2, 2),
+                      ),
+                    ],
+                    borderRadius: BorderRadius.all(Radius.circular(20))),
+                  child: Text(
+                      "Location: " + location,
+                    ),
+                )
                 : const SizedBox(),
           ],
         ),
